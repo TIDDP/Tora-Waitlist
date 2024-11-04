@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waitlist App</title>
+</head>
+<body>
+
+    <h1>Waitlist App</h1>
+
+    <!-- Form to Add User to Waitlist -->
+    <h2>Add User to Waitlist</h2>
+    <form id="waitlistForm">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" required><br><br>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <button type="submit">Add to Waitlist</button>
+    </form>
+
+    <p id="waitlistResponse"></p>
+
+    <!-- Form to Send Bulk Email -->
+    <h2>Send Bulk Email</h2>
+    <form id="emailForm">
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea><br><br>
+
+        <button type="submit">Send Email to All Users</button>
+    </form>
+
+    <p id="emailResponse"></p>
+
+    <script>
+        // Base URL for API
+        const API_BASE_URL = 'https://tora-waitlist.onrender.com';
+
+        // Handle waitlist form submission
+        document.getElementById('waitlistForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/waitlist`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ firstName, lastName, email }),
+                });
+
+                const result = await response.json();
+                document.getElementById('waitlistResponse').textContent = result.message || 'User added successfully!';
+            } catch (error) {
+                document.getElementById('waitlistResponse').textContent = 'Error adding user.';
+                console.error('Error:', error);
+            }
+        });
+
+        // Handle bulk email form submission
+        document.getElementById('emailForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const message = document.getElementById('message').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/send-email`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                const result = await response.json();
+                document.getElementById('emailResponse').textContent = result.message || 'Emails sent successfully!';
+            } catch (error) {
+                document.getElementById('emailResponse').textContent = 'Error sending emails.';
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>
